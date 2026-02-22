@@ -17,12 +17,15 @@ export const metadata: Metadata = {
   title: "Daily Imperative",
   description: "Your daily habits tracker for a better life.",
   manifest: "/manifest.json",
-  themeColor: "#000000",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
     title: "Imperative",
   },
+};
+
+export const viewport = {
+  themeColor: "#000000",
 };
 
 export default function RootLayout({
