@@ -1,6 +1,9 @@
 import { redirect } from "next/navigation"
-import { LogOut } from "lucide-react"
 import { revalidatePath } from "next/cache"
+import { eq } from "drizzle-orm"
+
+import { db } from "@/db"
+import { profiles } from "@/db/schema"
 
 import { createClient } from "@/lib/supabase/server"
 import { getTodaysHabits } from "@/app/actions/habits"
@@ -10,7 +13,8 @@ import { HabitCard } from "@/components/HabitCard"
 import { StreakCounter } from "@/components/StreakCounter"
 import { HistoryCalendar } from "@/components/HistoryCalendar"
 import { ResetButton } from "@/components/ResetButton"
-import { Button } from "@/components/ui/button"
+import { ThemeToggle } from "@/components/ThemeToggle"
+import { UserProfile } from "@/components/UserProfile"
 
 export const dynamic = "force-dynamic"
 export const revalidate = 0
@@ -40,11 +44,14 @@ export default async function Home({
   // Fetch today's habits
   const habits = await getTodaysHabits(user.id, user.email || "", targetDateStr)
 
-  // Fetch streak and history data
-  const [streakStats, monthlyHistory] = await Promise.all([
+  // Fetch streak, history data, and profile
+  const [streakStats, monthlyHistory, userProfiles] = await Promise.all([
     getStreakStats(user.id),
-    getMonthlyHistory(user.id, viewYear, viewMonth)
+    getMonthlyHistory(user.id, viewYear, viewMonth),
+    db.select().from(profiles).where(eq(profiles.id, user.id))
   ])
+
+  const dbProfile = userProfiles[0]
 
   const completedCount = habits.filter(h => h.isCompleted).length
   const totalCount = habits.length
@@ -78,18 +85,20 @@ export default async function Home({
 
           <div className="flex items-center gap-2">
             <ResetButton userId={user.id} />
-            <form action={async () => {
-              "use server"
-              const supabase = await createClient()
-              await supabase.auth.signOut()
-              revalidatePath("/", "layout")
-              redirect("/login")
-            }}>
-              <Button variant="ghost" size="icon" type="submit" title="Sign out">
-                <LogOut className="h-5 w-5 text-zinc-500" />
-                <span className="sr-only">Sign out</span>
-              </Button>
-            </form>
+            <ThemeToggle />
+            <UserProfile
+              userId={user.id}
+              email={user.email!}
+              name={dbProfile?.name || null}
+              avatarUrl={dbProfile?.avatarUrl || null}
+              onSignOut={async () => {
+                "use server"
+                const supabase = await createClient()
+                await supabase.auth.signOut()
+                revalidatePath("/", "layout")
+                redirect("/login")
+              }}
+            />
           </div>
         </header>
 

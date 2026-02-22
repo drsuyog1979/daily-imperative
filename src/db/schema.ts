@@ -3,6 +3,8 @@ import { pgTable, uuid, text, timestamp, date, unique, jsonb } from "drizzle-orm
 export const profiles = pgTable("profiles", {
     id: uuid("id").primaryKey().notNull(), // References auth.users(id)
     email: text("email").notNull(),
+    name: text("name"),
+    avatarUrl: text("avatarUrl"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
