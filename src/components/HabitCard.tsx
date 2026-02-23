@@ -74,7 +74,7 @@ export function HabitCard({ id, name, isCompleted: initialCompleted, userId, met
     const handleDeleteHabit = () => {
         setIsDeleting(true)
         startTransition(async () => {
-            await deleteCustomHabit(id, userId)
+            await deleteCustomHabit(userId, id)
             setIsDialogOpen(false)
             setIsDeleting(false)
         })
