@@ -133,3 +133,27 @@ export async function addCustomHabit(userId: string, name: string) {
         return { success: false, error: "Database error" }
     }
 }
+
+export async function deleteCustomHabit(userId: string, habitId: string) {
+    try {
+        // First delete all logs associated with this habit
+        await db.delete(habitLogs).where(
+            and(
+                eq(habitLogs.habitId, habitId),
+                eq(habitLogs.userId, userId)
+            )
+        )
+        // Then delete the habit configuration itself
+        await db.delete(habitConfigs).where(
+            and(
+                eq(habitConfigs.id, habitId),
+                eq(habitConfigs.userId, userId)
+            )
+        )
+        revalidatePath("/")
+        return { success: true }
+    } catch (error) {
+        console.error("Failed to delete custom habit:", error)
+        return { success: false, error: "Database error" }
+    }
+}

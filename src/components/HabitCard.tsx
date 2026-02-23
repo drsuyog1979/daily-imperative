@@ -12,7 +12,7 @@ import {
     DialogDescription,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { toggleHabit } from "@/app/actions/habits"
+import { toggleHabit, deleteCustomHabit } from "@/app/actions/habits"
 import { cn } from "@/lib/utils"
 
 import { ExerciseForm, type ExerciseMetadata } from "@/components/forms/ExerciseForm"
@@ -36,6 +36,9 @@ export function HabitCard({ id, name, isCompleted: initialCompleted, userId, met
     const [metadata, setMetadata] = useState<any>(initialMetadata)
     const [isDialogOpen, setIsDialogOpen] = useState(false)
     const [isPending, startTransition] = useTransition()
+    const [isDeleting, setIsDeleting] = useState(false)
+
+    const isCoreHabit = name === "Exercise" || name === "Meditation" || name === "Journal"
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleSaveLog = (formData: any) => {
@@ -65,6 +68,15 @@ export function HabitCard({ id, name, isCompleted: initialCompleted, userId, met
                 setIsCompleted(true)
                 setMetadata(initialMetadata)
             }
+        })
+    }
+
+    const handleDeleteHabit = () => {
+        setIsDeleting(true)
+        startTransition(async () => {
+            await deleteCustomHabit(id, userId)
+            setIsDialogOpen(false)
+            setIsDeleting(false)
         })
     }
 
@@ -166,11 +178,24 @@ export function HabitCard({ id, name, isCompleted: initialCompleted, userId, met
                                 size="icon"
                                 className="text-red-500 hover:text-red-600 hover:bg-red-100 dark:hover:bg-red-900/30 -mt-2 -mr-2"
                                 onClick={handleRemoveLog}
-                                disabled={isPending}
-                                title="Delete Log"
+                                disabled={isPending || isDeleting}
+                                title="Remove Log"
+                            >
+                                <Circle className="h-5 w-5" />
+                                <span className="sr-only">Remove Log</span>
+                            </Button>
+                        )}
+                        {!isCoreHabit && (
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="text-red-500 hover:text-red-600 hover:bg-red-100 dark:hover:bg-red-900/30 -mt-2 -mr-2"
+                                onClick={handleDeleteHabit}
+                                disabled={isPending || isDeleting}
+                                title="Delete Imperative Permanently"
                             >
                                 <Trash2 className="h-5 w-5" />
-                                <span className="sr-only">Delete Log</span>
+                                <span className="sr-only">Delete Imperative Permanently</span>
                             </Button>
                         )}
                     </DialogHeader>
