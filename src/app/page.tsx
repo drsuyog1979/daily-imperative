@@ -15,6 +15,7 @@ import { HistoryCalendar } from "@/components/HistoryCalendar"
 import { ResetButton } from "@/components/ResetButton"
 import { ThemeToggle } from "@/components/ThemeToggle"
 import { UserProfile } from "@/components/UserProfile"
+import { AddHabitDialog } from "@/components/AddHabitDialog"
 
 export const dynamic = "force-dynamic"
 export const revalidate = 0
@@ -138,7 +139,10 @@ export default async function Home({
           <h2 className="text-xl font-semibold px-1">Your Imperatives</h2>
           {habits.length === 0 ? (
             <div className="text-center p-8 border-2 border-dashed rounded-xl dark:border-zinc-800">
-              <p className="text-zinc-500 dark:text-zinc-400">No habits configured.</p>
+              <p className="text-zinc-500 dark:text-zinc-400 mb-4">No habits configured.</p>
+              <div className="max-w-xs mx-auto">
+                <AddHabitDialog userId={user.id} />
+              </div>
             </div>
           ) : (
             <div className="grid gap-4">
@@ -153,6 +157,7 @@ export default async function Home({
                   targetDate={targetDateStr}
                 />
               ))}
+              <AddHabitDialog userId={user.id} />
             </div>
           )}
         </div>

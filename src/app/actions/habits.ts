@@ -116,3 +116,20 @@ export async function resetHistory(userId: string) {
         return { success: false, error: "Database error" }
     }
 }
+
+export async function addCustomHabit(userId: string, name: string) {
+    if (!name || name.trim() === "") {
+        return { success: false, error: "Habit name cannot be empty" }
+    }
+    try {
+        await db.insert(habitConfigs).values({
+            userId,
+            name: name.trim()
+        })
+        revalidatePath("/")
+        return { success: true }
+    } catch (error) {
+        console.error("Failed to add custom habit:", error)
+        return { success: false, error: "Database error" }
+    }
+}
