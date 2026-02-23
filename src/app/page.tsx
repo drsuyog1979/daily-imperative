@@ -128,8 +128,8 @@ export default async function Home({
           {/* Progress bar */}
           <div className="w-full bg-zinc-100 dark:bg-zinc-800 rounded-full h-2.5 mt-4 overflow-hidden">
             <div
-              className="bg-zinc-900 dark:bg-zinc-100 h-2.5 rounded-full transition-all duration-500 ease-out"
-              style={{ width: `${totalCount === 0 ? 0 : (completedCount / totalCount) * 100}%` }}
+              className="bg-zinc-900 dark:bg-zinc-100 h-2.5 rounded-full transition-all duration-500 ease-out w-[var(--progress-width)]"
+              style={{ '--progress-width': `${totalCount === 0 ? 0 : (completedCount / totalCount) * 100}%` } as React.CSSProperties}
             ></div>
           </div>
         </div>
