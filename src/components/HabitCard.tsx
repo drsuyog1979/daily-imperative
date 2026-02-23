@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils"
 import { ExerciseForm, type ExerciseMetadata } from "@/components/forms/ExerciseForm"
 import { MeditationForm, type MeditationMetadata } from "@/components/forms/MeditationForm"
 import { JournalForm, type JournalMetadata } from "@/components/forms/JournalForm"
+import { CustomHabitForm, type CustomHabitMetadata } from "@/components/forms/CustomHabitForm"
 
 interface HabitCardProps {
     id: string
@@ -77,7 +78,7 @@ export function HabitCard({ id, name, isCompleted: initialCompleted, userId, met
         if (name === "Journal") {
             return <JournalForm initialData={metadata as JournalMetadata} onSubmit={handleSaveLog} isLoading={isPending} />
         }
-        return <p>Unknown habit type.</p>
+        return <CustomHabitForm habitName={name} initialData={metadata as CustomHabitMetadata} onSubmit={handleSaveLog} isLoading={isPending} />
     }
 
     const renderMetadataSummary = () => {
@@ -100,6 +101,11 @@ export function HabitCard({ id, name, isCompleted: initialCompleted, userId, met
             if (data.entryText) {
                 return data.entryText.length > 30 ? `${data.entryText.substring(0, 30)}...` : data.entryText
             }
+        }
+
+        if (metadata && (metadata as CustomHabitMetadata).note) {
+            const text = (metadata as CustomHabitMetadata).note!
+            return text.length > 30 ? `${text.substring(0, 30)}...` : text
         }
 
         return "Completed"
